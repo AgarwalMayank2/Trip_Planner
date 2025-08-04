@@ -22,7 +22,6 @@ def get_top_cities_from_wikivoyage(country):
     cities_list = []
 
     for sibling in cities_section.parent.find_next_siblings():
-        print(sibling)
         if sibling.name == "ul":
             for li in sibling.find_all("li"):
                 city = {}

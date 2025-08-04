@@ -3,12 +3,14 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-client = Groq(os.getenv("GROQ_API_KEY"))
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+model_name = "gemma2-9b-it"
 
 def country_extractor(user_query):
     prompt = f"The user query is :- {user_query}.\n If the place to visit is a city then return as 'I got city'."
     completion = client.chat.completions.create(
-        model="gemma2-9b-it",
+        model=model_name,
         messages=[
         {
             "role": "system",
@@ -28,7 +30,7 @@ def country_extractor(user_query):
     response = ""
     for chunk in completion:
         response += chunk.choices[0].delta.content or ""
-    return response
+    return response.strip('\n ')
 
 def cities_decider(user_query, cities_list):
     prompt = f"The user wants: {user_query}\nHere is a cities data where I am providing city name with its alternate name and a little about the city if available:\n"
@@ -36,7 +38,7 @@ def cities_decider(user_query, cities_list):
         prompt+= f"{i+1}. {city['name']} ({city['alt_name']}) :- {city['description']}\n"
     prompt += """Your response should be all the cities with their description as provided priority wise. Dont give anything else. Include all the cities provided in the prompt but priority wise."""
     completion = client.chat.completions.create(
-        model="gemma2-9b-it",
+        model=model_name,
         messages=[
         {
             "role": "system",
@@ -72,7 +74,7 @@ def hotels_selector(all_hotels, user_query):
     pormpt += "Select the best 5-6 hotels according to user's need and provide the hotel with all its information as provided."
 
     completion = client.chat.completions.create(
-        model="gemma2-9b-it",
+        model=model_name,
         messages=[
         {
             "role": "system",
@@ -97,11 +99,11 @@ def hotels_selector(all_hotels, user_query):
 def manager(final_city_list, visiting_places, hotels, file_location, user_query, arrival_date):
 
     with open(file_location, "w", encoding="utf-8") as file:
-        file.write("User Query: " + user_query + '\n' + "Arrival Date: " + arrival_date + '\n')
+        file.write("User Query: " + user_query + '\n' + "Arrival Date: " + arrival_date + '\n\n')
 
     for city in final_city_list:
-        places_to_visit = visiting_places["city"]
-        all_hotels = hotels["city"]
+        places_to_visit = visiting_places[city]
+        all_hotels = hotels[city]
 
         prompt = f"The user query is:- {user_query}\n. Visiting places in the city- '{city}' are:-\n"
         for place in places_to_visit:
@@ -109,7 +111,7 @@ def manager(final_city_list, visiting_places, hotels, file_location, user_query,
         prompt += "Hotels data in this city:-\n"
         prompt += hotels_selector(all_hotels, user_query)
         completion = client.chat.completions.create(
-            model="gemma2-9b-it",
+            model=model_name,
             messages=[
             {
                 "role": "system",

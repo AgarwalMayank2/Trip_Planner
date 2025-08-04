@@ -16,7 +16,7 @@ headers = {
 def search_hotels(cities_list, arrival_date):
     date_obj = datetime.strptime(arrival_date, "%Y-%m-%d")
     next_day = date_obj + timedelta(days = 1)
-    departure_date = next_day.strptime("%Y-%m-%d")
+    departure_date = next_day.strftime("%Y-%m-%d")
     hotels = {}
     for city in cities_list:
 
@@ -49,9 +49,9 @@ def search_hotels(cities_list, arrival_date):
             hotel_info["name"] = hotel['property']['name']
             hotel_info["reviewScoreWord"] = hotel['property']['reviewScoreWord']
             hotel_info["reviewScore"] = hotel['property']['reviewScore']
-            hotel_info["rate"] = hotel['property']['priceBreakdown']['grossPrice']['value'] + ' ' + hotel['property']['currency']
-            hotel_info["checkIn_Time"] = hotel['property']['checkin']['fromTime'] + " to " + hotel['property']['checkin']['untilTime']
-            hotel_info["checkOut_Time"] = hotel['property']['checkout']['fromTime'] + " to " + hotel['property']['checkout']['untilTime']
+            hotel_info["rate"] = f"{hotel['property']['priceBreakdown']['grossPrice']['value']} {hotel['property']['currency']}"
+            hotel_info["checkIn_Time"] = f"{hotel['property']['checkin']['fromTime']} to {hotel['property']['checkin']['untilTime']}"
+            hotel_info["checkOut_Time"] = f"{hotel['property']['checkout']['fromTime']} to {hotel['property']['checkout']['untilTime']}"
             all_hotels.append(hotel_info)
 
         hotels["city"] = all_hotels
