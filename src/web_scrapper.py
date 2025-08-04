@@ -2,9 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 
 def get_top_cities_from_wikivoyage(country):
-    if country == "I got city": 
-        cities_list = [{'name': country, "alt_name": None, "description": None}]
-        return cities_list
     
     url = f"https://en.wikivoyage.org/wiki/{country.replace(' ', '_')}"
     response = requests.get(url)
@@ -16,8 +13,8 @@ def get_top_cities_from_wikivoyage(country):
     soup = BeautifulSoup(response.text, 'html.parser')
     cities_section = soup.find(id="Cities")
     if not cities_section:
-        print("No Cities section found.")
-        return []
+        cities_list = [{'name': country, "alt_name": None, "description": None}]
+        return cities_list
 
     cities_list = []
 

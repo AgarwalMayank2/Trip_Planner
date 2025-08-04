@@ -8,13 +8,13 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 model_name = "gemma2-9b-it"
 
 def country_extractor(user_query):
-    prompt = f"The user query is :- {user_query}.\n If the place to visit is a city then return as 'I got city'."
+    prompt = f"The user query is :- {user_query}.\n Output only the city, state or country name."
     completion = client.chat.completions.create(
         model=model_name,
         messages=[
         {
             "role": "system",
-            "content": "You are a Country or a State extractor. You will get a prompt to plan a trip somewhere. You have to return only the country or state in which user wants to go. If the user wants to go to a city than return 'I got city' in your answer. If you get state or country then return the state or country in your answer. Only return the name of the state or country in your response and nothing else."
+            "content": "You are a Country, State or City extractor. You will get a prompt to plan a trip somewhere. You have to return the country, state or city in which user wants to go. Only return the name of the city, state or country in your response and nothing else. If there are multiple cities or multiple states or multiple countries then select the first place provided by user."
         },
         {
             "role": "user",
