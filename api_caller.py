@@ -1,10 +1,15 @@
 import requests
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+rapid_api = os.getenv("RAPID_API_KEY")
 
 dest_url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchDestination"
 hotels_url = "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchHotels"
 headers = {
-    "x-rapidapi-key": "95923f6703mshe85e7e3776a3598p1d1af4jsn5a5112002170",
+    "x-rapidapi-key": rapid_api,
     "x-rapidapi-host": "booking-com15.p.rapidapi.com"
 }
 
@@ -38,6 +43,7 @@ def search_hotels(cities_list, arrival_date):
         }
         response = requests.get(hotels_url, headers=headers, params=querystring)
         hotel_data = response.json()['data']['hotels']
+        all_hotels = []
         hotel_info = {}
         for hotel in hotel_data:
             hotel_info["name"] = hotel['property']['name']
@@ -46,7 +52,8 @@ def search_hotels(cities_list, arrival_date):
             hotel_info["rate"] = hotel['property']['priceBreakdown']['grossPrice']['value'] + ' ' + hotel['property']['currency']
             hotel_info["checkIn_Time"] = hotel['property']['checkin']['fromTime'] + " to " + hotel['property']['checkin']['untilTime']
             hotel_info["checkOut_Time"] = hotel['property']['checkout']['fromTime'] + " to " + hotel['property']['checkout']['untilTime']
+            all_hotels.append(hotel_info)
 
-        hotels["city"] = hotel_info
+        hotels["city"] = all_hotels
 
     return hotels
